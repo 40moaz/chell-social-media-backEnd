@@ -20,6 +20,9 @@ router.post("/", async (req, res) => {
   if (!userId) {
     return res.status(400).json({ message: "userId is required" });
   }
+  if (userId === undefined) {
+    return res.status(400).json({ message: "userId is required" });
+  }
 
   try {
     const newPost = new Post({
