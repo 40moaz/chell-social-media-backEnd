@@ -3,15 +3,24 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGO_URI);
 
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
   } catch (error) {
-    console.error(`MongoDB connection error: ${error.message}`);
-    process.exit(1); // إنهاء البرنامج لو فشل الاتصال
+    console.error("❌ MongoDB connection failed:");
+    console.error(error);
+    process.exit(1); // Exit with failure
   }
+
+  // Handle DB disconnect after connected
+  mongoose.connection.on("disconnected", () => {
+    console.warn("⚠️ MongoDB disconnected.");
+  });
+
+  // Optional: Catch connection errors after connected
+  mongoose.connection.on("error", (err) => {
+    console.error("❌ MongoDB runtime error:", err);
+  });
 };
 
 module.exports = connectDB;
