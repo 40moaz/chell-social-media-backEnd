@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", require("../routes/auth"));
+console.log("🔍 MONGO_URI = ", process.env.MONGO_URI);
 
 // Export as handler
 module.exports.handler = serverless(app);
