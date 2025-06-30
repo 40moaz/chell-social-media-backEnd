@@ -17,7 +17,7 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("API is running from Vercel Serverless!");
+  res.send("API is running from Vsercel Serverless!ss");
 });
 
 app.use("/api/auth", require("../routes/auth"));
