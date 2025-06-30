@@ -10,18 +10,19 @@ dotenv.config();
 const app = express();
 
 // DB Connection
-connectDB();
+connectDB(); // Make sure connectDB function is correctly defined and connecting
 
 app.use(cors());
 app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("API is running from Vsercel Serverless!ss");
+  res.send("API is running from Vercel Serverless!ss");
 });
 
-app.use("/api/auth", require("../routes/auth"));
-console.log("🔍 MONGO_URI = ", process.env.MONGO_URI);
+app.use("/api/auth", require("../routes/auth")); // This line imports your auth routes
 
-// Export as handler
-module.exports.handler = serverless(app);
+console.log("🔍 MONGO_URI = ", process.env.MONGO_URI ? "Loaded" : "Not Loaded");
+
+// This is the ONLY export Vercel expects for a serverless-http setup
+module.exports = app;
