@@ -4,15 +4,14 @@ const postSchema = new mongoose.Schema(
   {
     userId: {
       type: String,
-      required: true,   // عادة userId مطلوب في البوست
     },
     text: {
       type: String,
       default: "",
     },
     images: {
-      type: [String],   // مصفوفة سترينج
-      default: [],      // لو ما حطيتش صور
+      type: [String], // مصفوفة سترينج
+      default: [], // لو ما حطيتش صور
     },
   },
   { timestamps: true }
