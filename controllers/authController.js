@@ -22,14 +22,12 @@ const registerUser = async (req, res) => {
       website,
     } = req.body;
 
-    // Validation (backend برضو)
     if (!isAdult(birthday)) {
       return res
         .status(400)
         .json({ message: "You must be at least 18 years old." });
     }
 
-    // Check if email or username already exists
     const emailExists = await User.findOne({ email });
     const usernameExists = await User.findOne({ username });
 
@@ -39,12 +37,11 @@ const registerUser = async (req, res) => {
     if (usernameExists)
       return res.status(400).json({ message: "Username is taken" });
 
-    // Create user
     const newUser = await User.create({
       fullName,
       username,
       email,
-      password, // سيتم تشفيره في الـ model
+      password, // تشفير كلمة السر في الموديل
       phone,
       birthday,
       bio,
@@ -62,6 +59,31 @@ const registerUser = async (req, res) => {
   }
 };
 
+// جلب كل المستخدمين
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// جلب مستخدم بواسطة ID
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   registerUser,
+  getAllUsers,
+  getUserById,
 };
