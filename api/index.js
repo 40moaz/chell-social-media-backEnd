@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
   res.send("API is running from Vercel Serverless!ss");
 });
 const postsRoutes = require("../routes/posts");
-app.use("/posts", postsRoutes);
+app.use("/api/posts", postsRoutes);
 
 app.use("/api/auth", require("../routes/auth")); // This line imports your auth routes
 
