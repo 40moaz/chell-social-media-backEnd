@@ -10,11 +10,23 @@ const isAdult = (dateOfBirth) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { fullName, username, email, password, phone, birthday } = req.body;
+    const {
+      fullName,
+      username,
+      email,
+      password,
+      phone,
+      birthday,
+      bio,
+      location,
+      website,
+    } = req.body;
 
     // Validation (backend برضو)
     if (!isAdult(birthday)) {
-      return res.status(400).json({ message: "You must be at least 18 years old." });
+      return res
+        .status(400)
+        .json({ message: "You must be at least 18 years old." });
     }
 
     // Check if email or username already exists
@@ -35,11 +47,14 @@ const registerUser = async (req, res) => {
       password, // سيتم تشفيره في الـ model
       phone,
       birthday,
+      bio,
+      location,
+      website,
     });
 
     res.status(201).json({
       message: "User registered successfully",
-      user: newUser
+      user: newUser,
     });
   } catch (err) {
     console.error(err);
