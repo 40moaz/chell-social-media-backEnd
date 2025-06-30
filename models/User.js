@@ -43,6 +43,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "", // You can add a default profile image URL if needed
     },
+    bio: {
+      type: String,
+      required: false
+    },
+    location: {
+      type: String,
+      required: false
+    },
+    website: {
+      type: String,
+      required: false
+    }
   },
   { timestamps: true }
 );
