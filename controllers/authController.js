@@ -1,6 +1,5 @@
 const User = require("../models/User");
 
-// Helper function (اختياري): يتحقق من العمر
 const isAdult = (dateOfBirth) => {
   const today = new Date();
   const dob = new Date(dateOfBirth);
