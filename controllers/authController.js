@@ -84,20 +84,7 @@ const loginUser = async (req, res) => {
     });
 
     res.json({
-      message: "Login successful",
       token,
-      user: {
-        _id: user._id,
-        fullName: user.fullName,
-        username: user.username,
-        email: user.email,
-        phone: user.phone,
-        birthday: user.birthday,
-        profileImage: user.profileImage,
-        bio: user.bio,
-        location: user.location,
-        website: user.website,
-      },
     });
   } catch (err) {
     console.error(err);
