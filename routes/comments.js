@@ -20,12 +20,14 @@ router.post("/", async (req, res) => {
   }
 });
 
-// جلب كل التعليقات (أو تعليقات بوست معين)
 router.get("/", async (req, res) => {
   try {
-    const { postId } = req.query;
+    const { postId, userId } = req.query;
 
-    const filter = postId ? { postId } : {};
+    const filter = {};
+    if (postId) filter.postId = postId;
+    if (userId) filter.userId = userId;
+
     const comments = await Comment.find(filter).sort({ createdAt: -1 });
 
     res.status(200).json(comments);
