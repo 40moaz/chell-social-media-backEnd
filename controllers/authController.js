@@ -1,5 +1,6 @@
 const User = require("../models/User.js");
-
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const isAdult = (dateOfBirth) => {
   const today = new Date();
   const dob = new Date(dateOfBirth);
@@ -59,6 +60,51 @@ const registerUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    const { identifier, password } = req.body;
+
+    // identifier ممكن يكون email أو username
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, "supersecretkey123", {
+      expiresIn: "7d",
+    });
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        birthday: user.birthday,
+        profileImage: user.profileImage,
+        bio: user.bio,
+        location: user.location,
+        website: user.website,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // جلب كل المستخدمين
 const getAllUsers = async (req, res) => {
   try {
@@ -84,6 +130,7 @@ const getUserById = async (req, res) => {
 
 module.exports = {
   registerUser,
+  loginUser, // 👈 جديد
   getAllUsers,
   getUserById,
 };
