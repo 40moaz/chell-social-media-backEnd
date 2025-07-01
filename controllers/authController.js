@@ -114,10 +114,14 @@ const getUserById = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+const getMe = async (req, res) => {
+  res.status(200).json(req.user);
+};
 
 module.exports = {
   registerUser,
   loginUser, // 👈 جديد
   getAllUsers,
   getUserById,
+  getMe
 };

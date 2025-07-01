@@ -1,15 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const { registerUser, getAllUsers, getUserById, loginUser } = require("../controllers/authController");
+const {
+  registerUser,
+  loginUser,
+  getAllUsers,
+  getUserById,
+  getMe,
+} = require("../controllers/userController");
+const protect = require("../middleware/authMiddleware");
 
-// تسجيل مستخدم جديد
 router.post("/register", registerUser);
-
 router.post("/login", loginUser);
-// جلب كل المستخدمين
 router.get("/users", getAllUsers);
-
-// جلب مستخدم بالـ ID
 router.get("/users/:id", getUserById);
+router.get("/me", protect, getMe); // 👈 هنا راوت me
 
 module.exports = router;
