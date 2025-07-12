@@ -120,39 +120,19 @@ const getMe = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const updates = req.body;
 
-    // تحقق من وجود المستخدم
-    const user = await User.findById(id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await User.findByIdAndUpdate(id, updates, {
+      new: true, // عشان يرجع النسخة المعدلة
+    }).select("-password");
 
-    // تحديث الحقول اللي جت فقط (بشكل ديناميكي)
-    const allowedFields = [
-      "fullName",
-      "username",
-      "email",
-      "phone",
-      "birthday",
-      "bio",
-      "location",
-      "website",
-      "profileImage",
-      "coverImage",
-    ];
-
-    for (const key of allowedFields) {
-      if (req.body[key] !== undefined) {
-        user[key] = req.body[key];
-      }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const updatedUser = await user.save();
-
-    res.status(200).json({
-      message: "User updated successfully",
-      user: updatedUser,
-    });
+    res.json(user);
   } catch (err) {
-    console.error(err);
+    console.error("❌ Failed to update user", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -163,5 +143,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   getMe,
-  updateUser
+  updateUser,
 };
