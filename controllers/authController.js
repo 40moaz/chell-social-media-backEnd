@@ -117,11 +117,51 @@ const getUserById = async (req, res) => {
 const getMe = async (req, res) => {
   res.status(200).json(req.user);
 };
+const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // تحقق من وجود المستخدم
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // تحديث الحقول اللي جت فقط (بشكل ديناميكي)
+    const allowedFields = [
+      "fullName",
+      "username",
+      "email",
+      "phone",
+      "birthday",
+      "bio",
+      "location",
+      "website",
+      "profileImage",
+      "coverImage",
+    ];
+
+    for (const key of allowedFields) {
+      if (req.body[key] !== undefined) {
+        user[key] = req.body[key];
+      }
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      message: "User updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 module.exports = {
   registerUser,
   loginUser, // 👈 جديد
   getAllUsers,
   getUserById,
-  getMe
+  getMe,
+  updateUser
 };
