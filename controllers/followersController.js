@@ -1,53 +1,110 @@
 // controllers/followersController.js
 const User = require("../models/User");
 
-// ✅ متابعة مستخدم
+// ✅ Follow a user
 const followUser = async (req, res) => {
-  const currentUserId = req.user.id;
-  const userToFollowId = req.params.userId;
+  const currentUserId = req.user.id; // ID of the logged-in user (from auth middleware)
+  const userToFollowId = req.params.userId; // ID of the user whose profile is being viewed/followed
 
   if (currentUserId === userToFollowId) {
-    return res.status(400).json({ message: "You can't follow yourself.." });
+    return res.status(400).json({ message: "You cannot follow yourself." });
   }
 
-  const userToFollow = await User.findById(userToFollowId);
-  if (!userToFollow) return res.status(404).json({ message: "User not found" });
+  try {
+    const userToFollow = await User.findById(userToFollowId);
+    const currentUser = await User.findById(currentUserId);
 
-  if (!userToFollow.followers.includes(currentUserId)) {
+    if (!userToFollow || !currentUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Check if current user is already following
+    if (userToFollow.followers.includes(currentUserId)) {
+      return res.status(400).json({ message: "You are already following this user." });
+    }
+
+    // Add currentUserId to the followers array of userToFollow
     userToFollow.followers.push(currentUserId);
     await userToFollow.save();
-    res.json({ message: "Followed successfully" });
-  } else {
-    res.status(400).json({ message: "Already following this user" });
+
+    // Optionally, you might also want to add userToFollowId to the following array of currentUser
+    // This depends on your User model structure. If you have a 'following' array:
+    // currentUser.following.push(userToFollowId);
+    // await currentUser.save();
+
+    // Respond with success and updated followers count or state
+    res.status(200).json({
+      message: "Followed successfully",
+      isFollowing: true,
+      followersCount: userToFollow.followers.length,
+    });
+  } catch (error) {
+    console.error("Error following user:", error);
+    res.status(500).json({ message: "Server error while following user." });
   }
 };
 
-// ✅ إلغاء المتابعة
+// ✅ Unfollow a user
 const unfollowUser = async (req, res) => {
-  const currentUserId = req.user.id;
-  const userToUnfollowId = req.params.userId;
+  const currentUserId = req.user.id; // ID of the logged-in user
+  const userToUnfollowId = req.params.userId; // ID of the user to unfollow
 
-  const user = await User.findById(userToUnfollowId);
-  if (!user) return res.status(404).json({ message: "User not found" });
+  if (currentUserId === userToUnfollowId) {
+    return res.status(400).json({ message: "You cannot unfollow yourself." });
+  }
 
-  user.followers = user.followers.filter(
-    (followerId) => followerId.toString() !== currentUserId
-  );
+  try {
+    const userToUnfollow = await User.findById(userToUnfollowId);
+    const currentUser = await User.findById(currentUserId);
 
-  await user.save();
-  res.json({ message: "Unfollowed successfully" });
+    if (!userToUnfollow || !currentUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Check if current user is actually following
+    if (!userToUnfollow.followers.includes(currentUserId)) {
+      return res.status(400).json({ message: "You are not following this user." });
+    }
+
+    // Remove currentUserId from the followers array of userToUnfollow
+    userToUnfollow.followers = userToUnfollow.followers.filter(
+      (followerId) => followerId.toString() !== currentUserId
+    );
+    await userToUnfollow.save();
+
+    // Optionally, remove userToUnfollowId from the following array of currentUser
+    // currentUser.following = currentUser.following.filter(
+    //   (followingId) => followingId.toString() !== userToUnfollowId
+    // );
+    // await currentUser.save();
+
+    res.status(200).json({
+      message: "Unfollowed successfully",
+      isFollowing: false,
+      followersCount: userToUnfollow.followers.length,
+    });
+  } catch (error) {
+    console.error("Error unfollowing user:", error);
+    res.status(500).json({ message: "Server error while unfollowing user." });
+  }
 };
 
-// ✅ جلب المتابعين
+// ✅ Get followers of a user
 const getFollowers = async (req, res) => {
-  const user = await User.findById(req.params.userId).populate(
-    "followers",
-    "fullName username profileImage"
-  );
+  try {
+    const user = await User.findById(req.params.userId); // .populate("followers", "fullName username profileImage");
 
-  if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
 
-  res.json({ followers: user.followers });
+    // Only return the IDs for the frontend to determine follow status
+    // If you need full follower details, then populate.
+    res.status(200).json({ followers: user.followers });
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    res.status(500).json({ message: "Server error while fetching followers." });
+  }
 };
 
 module.exports = { followUser, unfollowUser, getFollowers };
