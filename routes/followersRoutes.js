@@ -12,9 +12,9 @@ const {
 router.get("/:userId", getFollowers);
 
 // تابع مستخدم
-router.post("/:userId", protect, followUser);
+router.post("/:userId", followUser);
 
 // الغِ المتابعة
-router.delete("/:userId", protect, unfollowUser);
+router.delete("/:userId", unfollowUser);
 
 module.exports = router;

@@ -7,7 +7,7 @@ const followUser = async (req, res) => {
   const userToFollowId = req.params.userId;
 
   if (currentUserId === userToFollowId) {
-    return res.status(400).json({ message: "You can't follow yourself." });
+    return res.status(400).json({ message: "You can't follow yourself.." });
   }
 
   const userToFollow = await User.findById(userToFollowId);
