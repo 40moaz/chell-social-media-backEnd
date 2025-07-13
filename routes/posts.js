@@ -12,7 +12,17 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+router.get("/user/:id", async (req, res) => {
+  const userId = req.params.id;
 
+  try {
+    const userPosts = await Post.find({ userId }).sort({ createdAt: -1 }); // أحدث البوستات أولاً
+    res.json(userPosts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 // POST /posts - إضافة بوست جديد
 router.post("/", async (req, res) => {
   const { userId, text, images } = req.body;

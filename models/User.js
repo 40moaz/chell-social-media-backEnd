@@ -54,7 +54,12 @@ const userSchema = new mongoose.Schema(
     website: {
       type: String,
       required: false
-    }
+    },
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    cover: {
+      type: String,
+      default: "", // You can add a default cover image URL if needed
+    },
   },
   { timestamps: true }
 );

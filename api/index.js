@@ -18,11 +18,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("API is running from Vercel Serverless!ss");
 });
-const postsRoutes = require("../routes/posts");
-const commentsRoutes = require("../routes/comments");
-app.use("/api/posts", postsRoutes);
-app.use("/api/comments", commentsRoutes);
-
+app.use("/api/posts", require("../routes/posts"));
+app.use("/api/comments", require("../routes/comments"));
+app.use("/api/followers", require("../routes/followersRoutes")); // This line imports your followers routes
 app.use("/api/auth", require("../routes/auth")); // This line imports your auth routes
 
 console.log("🔍 MONGO_URI = ", process.env.MONGO_URI ? "Loaded" : "Not Loaded");
