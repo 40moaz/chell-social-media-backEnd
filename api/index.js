@@ -71,5 +71,8 @@ app.use("/api/auth", require("../routes/auth"));
 
 console.log("🔍 MONGO_URI = ", process.env.MONGO_URI ? "Loaded" : "Not Loaded");
 
-// This is the ONLY export Vercel expects for a serverless-http setup
-module.exports = app;
+// ✅ لازم تستخدم listen هنا
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
+});
