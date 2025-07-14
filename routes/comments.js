@@ -22,6 +22,7 @@ router.post("/", async (req, res) => {
         receiverId: post.userId,
         postId,
         type: "comment",
+        content: text, // نص الكومنت
       });
 
       // ✅ ابعت WebSocket notification

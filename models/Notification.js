@@ -10,6 +10,7 @@ const notificationSchema = new mongoose.Schema(
       enum: ["like", "comment", "follow", "message"],
       required: true,
     },
+    content: { type: String },
     postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post" }, // لو لايك أو كومنت
     seen: { type: Boolean, default: false },
   },

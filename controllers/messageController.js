@@ -14,6 +14,7 @@ exports.sendMessage = async (req, res) => {
       senderId: sender,
       receiverId: receiver,
       type: "message",
+      content, // نص الرسالة
     });
 
     // ✅ Emit real-time notification if user is online
