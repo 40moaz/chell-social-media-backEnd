@@ -5,26 +5,27 @@ const { clients } = require("../ws/clients"); // أو wherever you defined it
 exports.sendMessage = async (req, res) => {
   try {
     const { sender, receiver, content } = req.body;
+
     const newMsg = new Message({ sender, receiver, content });
     await newMsg.save();
 
-    // ✅ Create Notification
-    // ✅ Create Notification
+    // ✅ Create notification in DB
     await Notification.create({
-      senderId: currentUserId,
-      receiverId: userToFollowId,
-      type: "follow",
+      senderId: sender,
+      receiverId: receiver,
+      type: "message",
     });
 
-    const receiverSocket = clients[userToFollowId];
+    // ✅ Emit real-time notification if user is online
+    const receiverSocket = clients[receiver];
     if (receiverSocket && receiverSocket.readyState === 1) {
       receiverSocket.send(
         JSON.stringify({
           type: "new-notification",
           notification: {
-            senderId: currentUserId,
-            receiverId: userToFollowId,
-            type: "follow",
+            senderId: sender,
+            receiverId: receiver,
+            type: "message",
             createdAt: new Date(),
           },
         })
