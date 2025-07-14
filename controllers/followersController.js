@@ -1,46 +1,48 @@
+const Notification = require("../models/Notification");
 // controllers/followersController.js
 const User = require("../models/User");
-
-// ✅ Follow a user
+// =========================== FOLLOW CONTROLLER =============================
 const followUser = async (req, res) => {
-  const currentUserId = req.user.id; // ID of the logged-in user (from auth middleware)
-  const userToFollowId = req.params.userId; // ID of the user whose profile is being viewed/followed
+  const currentUserId = req.user.id;
+  const userToFollowId = req.params.userId;
 
-  if (currentUserId === userToFollowId) {
+  if (currentUserId === userToFollowId)
     return res.status(400).json({ message: "You cannot follow yourself." });
-  }
 
   try {
     const userToFollow = await User.findById(userToFollowId);
     const currentUser = await User.findById(currentUserId);
 
-    if (!userToFollow || !currentUser) {
+    if (!userToFollow || !currentUser)
       return res.status(404).json({ message: "User not found." });
-    }
 
-    // Check if current user is already following
-    if (userToFollow.followers.includes(currentUserId)) {
-      return res.status(400).json({ message: "You are already following this user." });
-    }
+    if (userToFollow.followers.includes(currentUserId))
+      return res.status(400).json({ message: "Already following." });
 
-    // Add currentUserId to the followers array of userToFollow
     userToFollow.followers.push(currentUserId);
     await userToFollow.save();
 
-    // Optionally, you might also want to add userToFollowId to the following array of currentUser
-    // This depends on your User model structure. If you have a 'following' array:
-    // currentUser.following.push(userToFollowId);
-    // await currentUser.save();
+    // ✅ Create Notification
+    await Notification.create({
+      senderId: currentUserId,
+      receiverId: userToFollowId,
+      type: "follow",
+    });
 
-    // Respond with success and updated followers count or state
+    // ✅ Emit via socket.io
+    req.io?.to(userToFollowId).emit("notification", {
+      senderId: currentUserId,
+      receiverId: userToFollowId,
+      type: "follow",
+    });
+
     res.status(200).json({
       message: "Followed successfully",
       isFollowing: true,
       followersCount: userToFollow.followers.length,
     });
-  } catch (error) {
-    console.error("Error following user:", error);
-    res.status(500).json({ message: "Server error while following user." });
+  } catch (err) {
+    res.status(500).json({ message: "Error following user." });
   }
 };
 
@@ -63,7 +65,9 @@ const unfollowUser = async (req, res) => {
 
     // Check if current user is actually following
     if (!userToUnfollow.followers.includes(currentUserId)) {
-      return res.status(400).json({ message: "You are not following this user." });
+      return res
+        .status(400)
+        .json({ message: "You are not following this user." });
     }
 
     // Remove currentUserId from the followers array of userToUnfollow

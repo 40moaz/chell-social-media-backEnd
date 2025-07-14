@@ -38,7 +38,7 @@ wss.on("connection", (ws) => {
         userId = data.userId;
         clients[userId] = ws;
         console.log(`🟢 User ${userId} connected`);
-        broadcastOnlineUsers(); // ✨ Send update
+        broadcastOnlineUsers();
       }
 
       if (data.type === "send-message") {
@@ -53,6 +53,19 @@ wss.on("connection", (ws) => {
                 content: data.content,
                 createdAt: data.createdAt,
               },
+            })
+          );
+        }
+      }
+
+      // ✅ شرط منفصل للإشعارات
+      if (data.type === "send-notification") {
+        const receiverSocket = clients[data.receiverId];
+        if (receiverSocket && receiverSocket.readyState === WebSocket.OPEN) {
+          receiverSocket.send(
+            JSON.stringify({
+              type: "new-notification",
+              notification: data.notification, // لازم يحتوي على senderId, type, postId, createdAt, إلخ
             })
           );
         }

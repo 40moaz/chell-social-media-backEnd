@@ -2,17 +2,33 @@ const express = require("express");
 const router = express.Router();
 const Comment = require("../models/Comment");
 
-// إضافة تعليق على بوست
 router.post("/", async (req, res) => {
   try {
     const { userId, text, postId } = req.body;
 
-    if (!text || !postId) {
+    if (!text || !postId)
       return res.status(400).json({ message: "Text and postId are required" });
-    }
 
     const newComment = new Comment({ userId, text, postId });
     const savedComment = await newComment.save();
+
+    // ✅ Get post owner
+    const post = await Post.findById(postId);
+    if (post && post.userId.toString() !== userId) {
+      await Notification.create({
+        senderId: userId,
+        receiverId: post.userId,
+        postId,
+        type: "comment",
+      });
+
+      req.io?.to(post.userId.toString()).emit("notification", {
+        senderId: userId,
+        receiverId: post.userId,
+        postId,
+        type: "comment",
+      });
+    }
 
     res.status(201).json(savedComment);
   } catch (error) {

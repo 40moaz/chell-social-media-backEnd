@@ -6,6 +6,16 @@ exports.sendMessage = async (req, res) => {
     const { sender, receiver, content } = req.body;
     const newMsg = new Message({ sender, receiver, content });
     await newMsg.save();
+
+    // ✅ Create Notification
+    await Notification.create({ senderId: sender, receiverId: receiver, type: "message" });
+
+    req.io?.to(receiver).emit("notification", {
+      senderId: sender,
+      receiverId: receiver,
+      type: "message"
+    });
+
     res.status(201).json(newMsg);
   } catch (err) {
     res.status(500).json({ error: err.message });
