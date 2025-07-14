@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Comment = require("../models/Comment");
+const Notification = require("../models/Notification");
+const { clients } = require("../ws/clients"); // افترضنا إن clients متصدر من ملف ws
 
 router.post("/", async (req, res) => {
   try {
@@ -15,19 +17,23 @@ router.post("/", async (req, res) => {
     // ✅ Get post owner
     const post = await Post.findById(postId);
     if (post && post.userId.toString() !== userId) {
-      await Notification.create({
+      const notification = await Notification.create({
         senderId: userId,
         receiverId: post.userId,
         postId,
         type: "comment",
       });
 
-      req.io?.to(post.userId.toString()).emit("notification", {
-        senderId: userId,
-        receiverId: post.userId,
-        postId,
-        type: "comment",
-      });
+      // ✅ ابعت WebSocket notification
+      const receiverSocket = clients[post.userId.toString()];
+      if (receiverSocket && receiverSocket.readyState === 1) {
+        receiverSocket.send(
+          JSON.stringify({
+            type: "new-notification",
+            notification,
+          })
+        );
+      }
     }
 
     res.status(201).json(savedComment);

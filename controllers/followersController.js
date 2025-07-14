@@ -1,5 +1,5 @@
 const Notification = require("../models/Notification");
-// controllers/followersController.js
+const { clients } = require("../ws/clients"); // أو wherever you defined it
 const User = require("../models/User");
 // =========================== FOLLOW CONTROLLER =============================
 const followUser = async (req, res) => {
@@ -29,12 +29,20 @@ const followUser = async (req, res) => {
       type: "follow",
     });
 
-    // ✅ Emit via socket.io
-    req.io?.to(userToFollowId).emit("notification", {
-      senderId: currentUserId,
-      receiverId: userToFollowId,
-      type: "follow",
-    });
+    const receiverSocket = clients[userToFollowId];
+    if (receiverSocket && receiverSocket.readyState === 1) {
+      receiverSocket.send(
+        JSON.stringify({
+          type: "new-notification",
+          notification: {
+            senderId: currentUserId,
+            receiverId: userToFollowId,
+            type: "follow",
+            createdAt: new Date(),
+          },
+        })
+      );
+    }
 
     res.status(200).json({
       message: "Followed successfully",

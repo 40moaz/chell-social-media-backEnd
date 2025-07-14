@@ -1,6 +1,7 @@
 // controllers/messageController.js
 const Message = require("../models/Message");
-
+const Notification = require("../models/Notification");
+const { clients } = require("../ws/clients"); // أو wherever you defined it
 exports.sendMessage = async (req, res) => {
   try {
     const { sender, receiver, content } = req.body;
@@ -8,13 +9,27 @@ exports.sendMessage = async (req, res) => {
     await newMsg.save();
 
     // ✅ Create Notification
-    await Notification.create({ senderId: sender, receiverId: receiver, type: "message" });
-
-    req.io?.to(receiver).emit("notification", {
-      senderId: sender,
-      receiverId: receiver,
-      type: "message"
+    // ✅ Create Notification
+    await Notification.create({
+      senderId: currentUserId,
+      receiverId: userToFollowId,
+      type: "follow",
     });
+
+    const receiverSocket = clients[userToFollowId];
+    if (receiverSocket && receiverSocket.readyState === 1) {
+      receiverSocket.send(
+        JSON.stringify({
+          type: "new-notification",
+          notification: {
+            senderId: currentUserId,
+            receiverId: userToFollowId,
+            type: "follow",
+            createdAt: new Date(),
+          },
+        })
+      );
+    }
 
     res.status(201).json(newMsg);
   } catch (err) {

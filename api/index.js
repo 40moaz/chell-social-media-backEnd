@@ -4,13 +4,14 @@ const dotenv = require("dotenv");
 const connectDB = require("../config/db");
 const http = require("http");
 const WebSocket = require("ws");
+const { clients } = require("./ws");
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app); // ⬅️ لازم تعمل كده علشان تستخدمه في WebSocket
 const wss = new WebSocket.Server({ server });
-const clients = {}; // userId => ws
+// index.js
 
 function broadcastOnlineUsers() {
   const onlineUserIds = Object.keys(clients);
