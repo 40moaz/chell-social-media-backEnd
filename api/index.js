@@ -22,12 +22,13 @@ app.use(express.json());
 
 // API Routes
 app.get("/", (req, res) => {
-  res.send("✅ Express API is running");
+  res.send("API is running from Vercel Serverless!");
 });
-app.use("/api/posts", require("../routes/posts")); // ← دي تشتغل تمام كده
 app.use("/api/messages", require("../routes/messageRoutes"));
-// باقي الراوتس ...
-
+app.use("/api/posts", require("../routes/posts"));
+app.use("/api/comments", require("../routes/comments"));
+app.use("/api/followers", require("../routes/followersRoutes"));
+app.use("/api/auth", require("../routes/auth"));
 // WebSocket Logic
 wss.on("connection", (ws) => {
   const clientId = uuidv4();
