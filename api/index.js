@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const connectDB = require("../config/db");
 const http = require("http");
 const WebSocket = require("ws");
-const { clients } = require("./ws");
+const { clients } = require("../ws/clients");
 
 dotenv.config();
 
