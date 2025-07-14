@@ -96,6 +96,7 @@ app.use("/api/posts", require("../routes/posts"));
 app.use("/api/comments", require("../routes/comments"));
 app.use("/api/followers", require("../routes/followersRoutes"));
 app.use("/api/auth", require("../routes/auth"));
+app.use("/api/notifications", require("../routes/notifications"));
 
 // ✅ Simple response for GET /
 app.get("/", (req, res) => {
