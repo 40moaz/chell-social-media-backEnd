@@ -3,7 +3,7 @@ const router = express.Router();
 const Comment = require("../models/Comment");
 const Notification = require("../models/Notification");
 const { clients } = require("../ws/clients"); // افترضنا إن clients متصدر من ملف ws
-
+const Post = require("../models/Post");
 router.post("/", async (req, res) => {
   try {
     const { userId, text, postId } = req.body;
