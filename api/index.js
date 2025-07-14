@@ -1,44 +1,31 @@
-// api/index.js
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("../config/db");
 const http = require("http");
 const WebSocket = require("ws");
-const { v4: uuidv4 } = require("uuid");
 
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app); // ⬅️ هنجمع بينهم هنا
-const wss = new WebSocket.Server({ server }); // ⬅️ WebSocket على نفس السيرفر
+const server = http.createServer(app); // ⬅️ لازم تعمل كده علشان تستخدمه في WebSocket
+const wss = new WebSocket.Server({ server });
 
-const clients = {};
+const clients = {}; // ⬅️ هنا هنخزن الـ clients حسب الـ userId
 
-connectDB(); // ✅ connect DB
-
-app.use(cors());
-app.use(express.json());
-
-// API Routes
-app.get("/", (req, res) => {
-  res.send("API is running from Vercel Serverless!");
-});
-app.use("/api/messages", require("../routes/messageRoutes"));
-app.use("/api/posts", require("../routes/posts"));
-app.use("/api/comments", require("../routes/comments"));
-app.use("/api/followers", require("../routes/followersRoutes"));
-app.use("/api/auth", require("../routes/auth"));
-// WebSocket Logic
+// ✅ Handle WebSocket connections
 wss.on("connection", (ws) => {
-  const clientId = uuidv4();
-  clients[clientId] = ws;
+  let userId = null;
 
-  console.log("✅ WebSocket connected:", clientId);
-
-  ws.on("message", (message) => {
+  ws.on("message", (msg) => {
     try {
-      const data = JSON.parse(message);
+      const data = JSON.parse(msg);
+
+      if (data.type === "join") {
+        userId = data.userId;
+        clients[userId] = ws;
+        console.log(`🟢 User ${userId} connected`);
+      }
 
       if (data.type === "send-message") {
         const receiverSocket = clients[data.receiverId];
@@ -47,27 +34,48 @@ wss.on("connection", (ws) => {
             JSON.stringify({
               type: "receive-message",
               message: {
-                senderId: clientId,
+                senderId: data.senderId,
+                receiverId: data.receiverId,
                 content: data.content,
-                createdAt: new Date().toISOString(),
+                createdAt: data.createdAt,
               },
             })
           );
         }
       }
-    } catch (err) {
-      console.error("❌ Invalid message format:", err.message);
+    } catch (error) {
+      console.error("❌ Error parsing message:", error.message);
     }
   });
 
   ws.on("close", () => {
-    delete clients[clientId];
-    console.log("❌ WebSocket closed:", clientId);
+    if (userId) {
+      delete clients[userId];
+      console.log(`🔴 User ${userId} disconnected`);
+    }
   });
 });
 
-// ✅ Start the combined server
+// ✅ Connect to DB
+connectDB();
+
+app.use(cors());
+app.use(express.json());
+
+// ✅ REST API routes
+app.use("/api/messages", require("../routes/messageRoutes"));
+app.use("/api/posts", require("../routes/posts"));
+app.use("/api/comments", require("../routes/comments"));
+app.use("/api/followers", require("../routes/followersRoutes"));
+app.use("/api/auth", require("../routes/auth"));
+
+// ✅ Simple response for GET /
+app.get("/", (req, res) => {
+  res.send("WebSocket server is running.");
+});
+
+// ✅ Start server
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
-  console.log(`🚀 Server listening on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
