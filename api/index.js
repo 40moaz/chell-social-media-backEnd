@@ -10,14 +10,27 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app); // ⬅️ لازم تعمل كده علشان تستخدمه في WebSocket
 const wss = new WebSocket.Server({ server });
+const clients = {}; // userId => ws
 
-const clients = {}; // ⬅️ هنا هنخزن الـ clients حسب الـ userId
+function broadcastOnlineUsers() {
+  const onlineUserIds = Object.keys(clients);
+  const payload = JSON.stringify({
+    type: "online-users",
+    users: onlineUserIds,
+  });
 
-// ✅ Handle WebSocket connections
+  Object.values(clients).forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(payload);
+    }
+  });
+}
+
 wss.on("connection", (ws) => {
   let userId = null;
 
   ws.on("message", (msg) => {
+    console.log("📩 Incoming raw message:", msg);
     try {
       const data = JSON.parse(msg);
 
@@ -25,6 +38,7 @@ wss.on("connection", (ws) => {
         userId = data.userId;
         clients[userId] = ws;
         console.log(`🟢 User ${userId} connected`);
+        broadcastOnlineUsers(); // ✨ Send update
       }
 
       if (data.type === "send-message") {
@@ -49,9 +63,10 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
-    if (userId) {
+    if (userId && clients[userId]) {
       delete clients[userId];
       console.log(`🔴 User ${userId} disconnected`);
+      broadcastOnlineUsers(); // ✨ Send update
     }
   });
 });
