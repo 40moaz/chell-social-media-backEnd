@@ -7,6 +7,7 @@ const {
   getUserById,
   loginUser,
   getMe,
+  updateFcmToken
 } = require("../controllers/authController");
 const protect = require("../middleware/authMiddleware");
 // تسجيل مستخدم جديد
@@ -21,5 +22,7 @@ router.get("/users", getAllUsers);
 router.get("/users/:id", getUserById);
 
 router.patch("/users/:id", updateUser);
+
+router.post("/fcm-token", protect, updateFcmToken);
 
 module.exports = router;

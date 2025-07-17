@@ -1,18 +1,39 @@
 const express = require("express");
 const router = express.Router();
+const User = require("../models/User");
 const Notification = require("../models/Notification");
-
-// إنشاء إشعار
 router.post("/", async (req, res) => {
   try {
     const newNotification = new Notification(req.body);
     const saved = await newNotification.save();
+
+    // إرسال إشعار لو المستخدم عنده FCM Token
+    const user = await User.findById(saved.receiverId);
+    if (user?.fcmToken) {
+      const sendNotification = require("../utils/sendNotification");
+      await sendNotification(
+        user.fcmToken,
+        "new_notification",
+        saved.text || "new notification"
+      );
+    }
+
     res.status(201).json(saved);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+router.post("/save-token", async (req, res) => {
+  const { userId, fcmToken } = req.body;
+
+  try {
+    await User.findByIdAndUpdate(userId, { fcmToken });
+    res.status(200).json({ message: "FCM token saved" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save token" });
+  }
+});
 // جلب إشعارات مستخدم
 router.get("/:userId", async (req, res) => {
   try {
