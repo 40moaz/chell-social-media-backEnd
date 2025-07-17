@@ -2,7 +2,7 @@
 const Message = require("../models/Message");
 const Notification = require("../models/Notification");
 const { clients } = require("../ws/clients"); // أو wherever you defined it
-const sendNotification = require("../utils/sendNotification");
+const sendPushNotification = require("../utils/sendPushNotification");
 const User = require("../models/User");
 exports.sendMessage = async (req, res) => {
   try {
@@ -21,10 +21,12 @@ exports.sendMessage = async (req, res) => {
 
     // ✅ Send Push Notification if user has FCM token
     const user = await User.findById(receiver);
+    const senderUser = await User.findById(sender);
+
     if (user?.fcmToken) {
-      await sendNotification(
+      await sendPushNotification(
         user.fcmToken,
-        "new message",
+        `new message from ${senderUser.fullName}`,
         content.length > 50 ? content.slice(0, 50) + "..." : content
       );
     }

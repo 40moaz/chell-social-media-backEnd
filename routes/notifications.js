@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+const sendPushNotification = require("../utils/sendPushNotification");
 router.post("/", async (req, res) => {
   try {
     const newNotification = new Notification(req.body);
@@ -10,8 +11,7 @@ router.post("/", async (req, res) => {
     // إرسال إشعار لو المستخدم عنده FCM Token
     const user = await User.findById(saved.receiverId);
     if (user?.fcmToken) {
-      const sendNotification = require("../utils/sendNotification");
-      await sendNotification(
+      await sendPushNotification(
         user.fcmToken,
         "new_notification",
         saved.text || "new notification"
