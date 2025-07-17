@@ -3,7 +3,7 @@ const Message = require("../models/Message");
 const Notification = require("../models/Notification");
 const { clients } = require("../ws/clients"); // أو wherever you defined it
 const sendNotification = require("../utils/sendNotification");
-import User from "../models/User";
+const User = require("../models/User");
 exports.sendMessage = async (req, res) => {
   try {
     const { sender, receiver, content } = req.body;
