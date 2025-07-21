@@ -20,6 +20,9 @@ const StorySchema = new mongoose.Schema({
   duration: {
     type: Number
   },
+  bgColor: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
