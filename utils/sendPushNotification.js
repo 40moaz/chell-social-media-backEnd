@@ -10,6 +10,7 @@ const sendPushNotification = async (fcmToken, title, body) => {
 
   const accessTokenObj = await auth.getAccessToken();
   const accessToken = accessTokenObj?.token || accessTokenObj;
+  console.log(fcmToken, title, body, accessToken);
 
   const message = {
     message: {
@@ -45,7 +46,10 @@ const sendPushNotification = async (fcmToken, title, body) => {
 
     console.log("✅ Notification sent:", response.data);
   } catch (error) {
-    console.error("❌ Error sending notification:", error.response?.data || error.message);
+    console.error(
+      "❌ Error sending notification:",
+      error.response?.data || error.message
+    );
   }
 };
 
