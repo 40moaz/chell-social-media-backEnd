@@ -12,6 +12,19 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// routes/posts.js
+router.get("/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    res.json(post);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.get("/user/:id", async (req, res) => {
   const userId = req.params.id;
 
@@ -36,8 +49,6 @@ router.delete("/delete-all", async (req, res) => {
     res.status(500).json({ message: "Failed to delete posts." });
   }
 });
-
-
 
 // POST /posts - إضافة بوست جديد
 router.post("/", async (req, res) => {
