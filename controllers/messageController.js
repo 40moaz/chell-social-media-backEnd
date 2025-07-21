@@ -2,8 +2,6 @@
 const Message = require("../models/Message");
 const Notification = require("../models/Notification");
 const { clients } = require("../ws/clients"); // أو wherever you defined it
-const sendPushNotification = require("../utils/sendPushNotification");
-const User = require("../models/User");
 exports.sendMessage = async (req, res) => {
   try {
     const { sender, receiver, content } = req.body;
@@ -18,18 +16,6 @@ exports.sendMessage = async (req, res) => {
       type: "message",
       content,
     });
-
-    // ✅ Send Push Notification if user has FCM token
-    const user = await User.findById(receiver);
-    const senderUser = await User.findById(sender);
-
-    if (user?.fcmToken) {
-      await sendPushNotification(
-        user.fcmToken,
-        `new message from ${senderUser.fullName}`,
-        content.length > 50 ? content.slice(0, 50) + "..." : content
-      );
-    }
 
     // ✅ Emit real-time notification if user is online (WebSocket)
     const receiverSocket = clients[receiver];

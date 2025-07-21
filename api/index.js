@@ -9,7 +9,7 @@ const { clients } = require("../ws/clients");
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app); // ⬅️ لازم تعمل كده علشان تستخدمه في WebSocket
+const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 // index.js
 

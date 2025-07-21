@@ -8,21 +8,6 @@ const isAdult = (dateOfBirth) => {
   const m = today.getMonth() - dob.getMonth();
   return age > 18 || (age === 18 && m >= 0);
 };
-const updateFcmToken = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { token } = req.body;
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { fcmToken: token },
-      { new: true }
-    );
-    res.status(200).json({ message: "Token updated", user });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 const registerUser = async (req, res) => {
   try {
@@ -158,6 +143,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   getMe,
-  updateUser,
-  updateFcmToken,
+  updateUser
 };
