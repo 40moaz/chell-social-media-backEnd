@@ -19,6 +19,7 @@ router.get("/search", async (req, res) => {
 
     const searchRegex = new RegExp(query, "i");
 
+    // البحث في المستخدمين
     if (!searchType || searchType === "users") {
       const users = await User.find({
         $or: [{ username: searchRegex }, { fullName: searchRegex }],
@@ -26,10 +27,11 @@ router.get("/search", async (req, res) => {
       results.users = users;
     }
 
+    // البحث في البوستات
     if (!searchType || searchType === "posts") {
-      const posts = await Post.find({ content: searchRegex })
+      const posts = await Post.find({ text: searchRegex })
         .populate("userId", "username fullName profileImage")
-        .select("content imageUrl userId");
+        .select("text images userId");
       results.posts = posts;
     }
 
