@@ -13,7 +13,11 @@ const updateFcmToken = async (req, res) => {
     const userId = req.user.id;
     const { token } = req.body;
 
-    const user = await User.findByIdAndUpdate(userId, { fcmToken: token }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { fcmToken: token },
+      { new: true }
+    );
     res.status(200).json({ message: "Token updated", user });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -150,10 +154,10 @@ const updateUser = async (req, res) => {
 
 module.exports = {
   registerUser,
-  loginUser, // 👈 جديد
+  loginUser,
   getAllUsers,
   getUserById,
   getMe,
   updateUser,
-  updateFcmToken
+  updateFcmToken,
 };

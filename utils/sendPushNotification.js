@@ -1,6 +1,6 @@
 const { GoogleAuth } = require("google-auth-library");
 const axios = require("axios");
-const serviceAccount = require("../chell-15104-firebase-adminsdk-fbsvc-39e17ea61d.json"); // عدل المسار حسب مكان ملف JSON
+const serviceAccount = require("../chell-15104-firebase-adminsdk-fbsvc-39e17ea61d.json");
 
 const sendPushNotification = async (fcmToken, title, body) => {
   const auth = new GoogleAuth({
@@ -8,7 +8,8 @@ const sendPushNotification = async (fcmToken, title, body) => {
     scopes: ["https://www.googleapis.com/auth/firebase.messaging"],
   });
 
-  const accessToken = await auth.getAccessToken();
+  const accessTokenObj = await auth.getAccessToken();
+  const accessToken = accessTokenObj?.token || accessTokenObj;
 
   const message = {
     message: {
@@ -16,6 +17,16 @@ const sendPushNotification = async (fcmToken, title, body) => {
       notification: {
         title,
         body,
+      },
+      webpush: {
+        headers: {
+          Urgency: "high",
+        },
+        notification: {
+          title,
+          body,
+          icon: "https://your-app.com/icon.png",
+        },
       },
     },
   };
@@ -26,15 +37,15 @@ const sendPushNotification = async (fcmToken, title, body) => {
       message,
       {
         headers: {
-          Authorization: `Bearer ${accessToken.token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
       }
     );
 
-    console.log("Notification sent:", response.data);
+    console.log("✅ Notification sent:", response.data);
   } catch (error) {
-    console.error("Error sending notification:", error.response?.data || error.message);
+    console.error("❌ Error sending notification:", error.response?.data || error.message);
   }
 };
 
