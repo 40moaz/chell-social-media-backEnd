@@ -28,5 +28,35 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Failed to create story" });
   }
 });
+// Get all stories
+router.get("/", async (req, res) => {
+  try {
+    const stories = await Story.find().sort({ createdAt: -1 });
+    res.status(200).json(stories);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", err });
+  }
+});
 
+// Get stories by userId
+router.get("/:userId", async (req, res) => {
+  try {
+    const stories = await Story.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+    res.status(200).json(stories);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", err });
+  }
+});
+// Delete a story
+router.delete("/:id", async (req, res) => {
+  try {
+    const story = await Story.findByIdAndDelete(req.params.id);
+    if (!story) {
+      return res.status(404).json({ message: "Story not found" });
+    }
+    res.status(200).json({ message: "Story deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", err });
+  }
+});
 module.exports = router;
