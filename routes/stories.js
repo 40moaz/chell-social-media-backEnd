@@ -33,7 +33,7 @@ router.get("/", async (req, res) => {
   try {
     const stories = await Story.find()
       .sort({ createdAt: -1 })
-      .populate("user", "username profileImage fullName"); // المهم هنا
+      .populate("userId", "username profileImage fullName"); // المهم هنا
 
     res.status(200).json(stories);
   } catch (err) {
