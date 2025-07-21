@@ -31,10 +31,13 @@ router.post("/", async (req, res) => {
 // Get all stories
 router.get("/", async (req, res) => {
   try {
-    const stories = await Story.find().sort({ createdAt: -1 });
+    const stories = await Story.find()
+      .sort({ createdAt: -1 })
+      .populate("user", "username profileImage fullName"); // المهم هنا
+
     res.status(200).json(stories);
   } catch (err) {
-    res.status(500).json({ message: "Server Error", err });
+    res.status(500).json({ error: "Server error" });
   }
 });
 
