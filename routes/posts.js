@@ -16,7 +16,9 @@ router.get("/user/:id", async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const userPosts = await Post.find({ userId }).sort({ createdAt: -1 }); // أحدث البوستات أولاً
+    const userPosts = await Post.find({ userId: req.params.id }).sort({
+      createdAt: -1,
+    });
     res.json(userPosts);
   } catch (err) {
     console.error(err);
