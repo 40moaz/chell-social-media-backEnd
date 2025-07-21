@@ -25,6 +25,20 @@ router.get("/user/:id", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// ⚠️ Route خطير - استخدمه بحذر وامسحه بعدين
+router.delete("/delete-all", async (req, res) => {
+  try {
+    await Post.deleteMany({});
+    res.status(200).json({ message: "All posts deleted successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete posts." });
+  }
+});
+
+
+
 // POST /posts - إضافة بوست جديد
 router.post("/", async (req, res) => {
   const { userId, text, images } = req.body;
