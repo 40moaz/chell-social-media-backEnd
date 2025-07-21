@@ -3,7 +3,7 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const router = express.Router();
 
-router.get("/search", async (req, res) => {
+router.get("/", async (req, res) => {
   const query = req.query.q;
   const searchType = req.query.type;
 
