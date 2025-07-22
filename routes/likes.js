@@ -14,5 +14,9 @@ router.delete("/", removeLike);
 
 // GET /likes/:postId
 router.get("/:postId", getLikesByPost);
+// Simple response for GET /likes
+router.get("/", (req, res) => {
+  res.send("Likes route working ✅");
+});
 
 module.exports = router;
