@@ -13,6 +13,11 @@ const likeSchema = new mongoose.Schema(
       ref: "Post",
       required: true,
     },
+    reaction: {
+      type: String,
+      enum: ["like", "love", "haha", "wow", "sad", "angry"],
+      required: true,
+    }
   },
   { timestamps: true }
 );
