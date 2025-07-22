@@ -26,8 +26,6 @@ router.get("/:id", async (req, res) => {
 });
 
 router.get("/user/:id", async (req, res) => {
-  const userId = req.params.id;
-
   try {
     const userPosts = await Post.find({ userId: req.params.id }).sort({
       createdAt: -1,
@@ -52,7 +50,7 @@ router.delete("/delete-all", async (req, res) => {
 
 // POST /posts - إضافة بوست جديد
 router.post("/", async (req, res) => {
-  const { userId, text, images } = req.body;
+  const { userId, text, images, videos } = req.body;
 
   if (!userId) {
     return res.status(400).json({ message: "userId is required" });
@@ -66,6 +64,7 @@ router.post("/", async (req, res) => {
       userId,
       text: text || "",
       images: images || [],
+      videos: videos || [],
     });
 
     const savedPost = await newPost.save();
@@ -79,7 +78,7 @@ router.post("/", async (req, res) => {
 // PUT /posts/:id - تعديل بوست موجود
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { text, images } = req.body;
+  const { text, images, videos } = req.body;
 
   try {
     const post = await Post.findById(id);
@@ -90,6 +89,7 @@ router.put("/:id", async (req, res) => {
     // حدث الحقول المطلوبة فقط
     if (text !== undefined) post.text = text;
     if (images !== undefined) post.images = images;
+    if (videos !== undefined) post.videos = videos;
 
     const updatedPost = await post.save();
     res.json(updatedPost);

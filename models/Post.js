@@ -12,8 +12,12 @@ const postSchema = new mongoose.Schema(
       default: "",
     },
     images: {
-      type: [String], // مصفوفة سترينج
-      default: [], // لو ما حطيتش صور
+      type: [String],
+      default: [],
+    },
+    videos: {
+      type: [String], // ممكن يبقى لينكات Cloudinary أو اسم الملف لو بتخزن محلي
+      default: [],
     },
   },
   { timestamps: true }
