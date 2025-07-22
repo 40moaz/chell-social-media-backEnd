@@ -100,7 +100,7 @@ app.use("/api/auth", require("../routes/auth"));
 app.use("/api/notifications", require("../routes/notifications"));
 app.use("/api/stories", require("../routes/stories"));
 app.use("/api/search", require("../routes/search"));
-
+app.use("api/likes", require("../routes/likes"));
 // ✅ Simple response for GET /
 app.get("/", (req, res) => {
   res.send("WebSocket server is running.");
