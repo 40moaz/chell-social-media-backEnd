@@ -52,7 +52,7 @@ router.get('/:id/viewers', async (req, res) => {
     const story = await Story.findById(req.params.id).populate('viewers', 'username profileImage fullName');
     res.json(story.viewers);
   } catch {
-    res.status(500).json({ error: 'Failed to fetch viewers' });
+    res.status(500).json({ error: 'Failed to fetch viewers!' });
   }
 });
 

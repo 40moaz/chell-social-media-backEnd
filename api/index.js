@@ -31,10 +31,11 @@ wss.on("connection", (ws) => {
   let userId = null;
 
   ws.on("message", (msg) => {
-    console.log("📩 Incoming raw message:", msg);
+    console.log("📩 Incoming message:", msg);
     try {
       const data = JSON.parse(msg);
-
+      console.log("📩 Parsed data:", data);
+      
       if (data.type === "join") {
         userId = data.userId;
         clients[userId] = ws;
@@ -101,9 +102,9 @@ app.use("/api/notifications", require("../routes/notifications"));
 app.use("/api/stories", require("../routes/stories"));
 app.use("/api/search", require("../routes/search"));
 app.use("/api/likes", require("../routes/likes"));
-// ✅ Simple response for GET /
+
 app.get("/", (req, res) => {
-  res.send("WebSocket server is running.");
+  res.send("WebSocket & api server is running.>>>>>>>>>>>");
 });
 
 // ✅ Start server
