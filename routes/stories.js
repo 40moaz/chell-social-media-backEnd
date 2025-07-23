@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const Story = require("../models/Story");
-
+const authMiddleware = require("../middleware/authMiddleware");
 // POST /stories
 router.post("/", async (req, res) => {
   try {
@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
   }
 });
 // PUT /api/stories/:id/view
-router.put("/:id/view", async (req, res) => {
+router.put("/:id/view", authMiddleware, async (req, res) => {
   const userId = req.user.id; // from auth middleware
   const storyId = req.params.id;
 
