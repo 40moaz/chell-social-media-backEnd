@@ -46,6 +46,15 @@ router.put("/:id/view", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+// GET /api/stories/:id/viewers
+router.get('/:id/viewers', async (req, res) => {
+  try {
+    const story = await Story.findById(req.params.id).populate('viewers', 'username avatar');
+    res.json(story.viewers);
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch viewers' });
+  }
+});
 
 // Get all stories
 router.get("/", async (req, res) => {
