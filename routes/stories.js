@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
       mediaUrl,
       mediaType,
       duration,
-      bgColor
+      bgColor,
     });
 
     res.status(201).json(story);
@@ -28,6 +28,25 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Failed to create story" });
   }
 });
+// PUT /api/stories/:id/view
+router.put("/:id/view", async (req, res) => {
+  const userId = req.user.id; // from auth middleware
+  const storyId = req.params.id;
+
+  try {
+    const story = await Story.findById(storyId);
+
+    if (!story.viewers.includes(userId)) {
+      story.viewers.push(userId);
+      await story.save();
+    }
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // Get all stories
 router.get("/", async (req, res) => {
   try {
@@ -44,7 +63,9 @@ router.get("/", async (req, res) => {
 // Get stories by userId
 router.get("/:userId", async (req, res) => {
   try {
-    const stories = await Story.find({ userId: req.params.userId }).sort({ createdAt: -1 });
+    const stories = await Story.find({ userId: req.params.userId }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(stories);
   } catch (err) {
     res.status(500).json({ message: "Server Error", err });

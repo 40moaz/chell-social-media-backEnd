@@ -11,18 +11,24 @@ const StorySchema = new mongoose.Schema({
     type: String,
   },
   mediaUrl: {
-    type: String
+    type: String,
   },
   mediaType: {
     type: String,
     enum: ["image", "video"],
   },
   duration: {
-    type: Number
+    type: Number,
   },
   bgColor: {
     type: String,
   },
+  viewers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,
