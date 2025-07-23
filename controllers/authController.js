@@ -49,10 +49,13 @@ const registerUser = async (req, res) => {
       location,
       website,
     });
-
+    const token = jwt.sign({ userId: newUser._id }, "supersecretkey123", {
+      expiresIn: "7d",
+    });
     res.status(201).json({
       message: "User registered successfully",
       user: newUser,
+      token,
     });
   } catch (err) {
     console.error(err);
@@ -143,5 +146,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   getMe,
-  updateUser
+  updateUser,
 };
