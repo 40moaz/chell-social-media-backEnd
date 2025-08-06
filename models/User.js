@@ -16,7 +16,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       minlength: 3,
-      match: [/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"],
+      match: [
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores",
+      ],
     },
     email: {
       type: String,
@@ -33,7 +36,10 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       required: [true, "Phone number is required"],
-      match: [/^\+\d{7,15}$/, "Phone number must include country code and be 7-15 digits"],
+      match: [
+        /^\+\d{7,15}$/,
+        "Phone number must include country code and be 7-15 digits",
+      ],
     },
     birthday: {
       type: String,
@@ -45,21 +51,22 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
-      required: false
+      required: false,
     },
     location: {
       type: String,
-      required: false
+      required: false,
     },
     website: {
       type: String,
-      required: false
+      required: false,
     },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     cover: {
       type: String,
       default: "", // You can add a default cover image URL if needed
     },
+    bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   },
   { timestamps: true }
 );

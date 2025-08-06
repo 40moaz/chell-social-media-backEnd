@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Comment = require("../models/Comment");
 const Notification = require("../models/Notification");
-const { clients } = require("../ws/clients"); // افترضنا إن clients متصدر من ملف ws
+const { clients } = require("../ws/clients");
 const Post = require("../models/Post");
 router.post("/", async (req, res) => {
   try {
@@ -14,7 +14,6 @@ router.post("/", async (req, res) => {
     const newComment = new Comment({ userId, text, postId });
     const savedComment = await newComment.save();
 
-    // ✅ Get post owner
     const post = await Post.findById(postId);
     if (post && post.userId.toString() !== userId) {
       const notification = await Notification.create({
@@ -22,10 +21,9 @@ router.post("/", async (req, res) => {
         receiverId: post.userId,
         postId,
         type: "comment",
-        content: text, // نص الكومنت
+        content: text,
       });
 
-      // ✅ ابعت WebSocket notification
       const receiverSocket = clients[post.userId.toString()];
       if (receiverSocket && receiverSocket.readyState === 1) {
         receiverSocket.send(
@@ -59,7 +57,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// حذف تعليق بالـ ID
 router.delete("/:id", async (req, res) => {
   try {
     const deleted = await Comment.findByIdAndDelete(req.params.id);

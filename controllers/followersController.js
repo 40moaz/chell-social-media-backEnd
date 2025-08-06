@@ -1,5 +1,5 @@
 const Notification = require("../models/Notification");
-const { clients } = require("../ws/clients"); // أو wherever you defined it
+const { clients } = require("../ws/clients");
 const User = require("../models/User");
 // =========================== FOLLOW CONTROLLER =============================
 const followUser = async (req, res) => {

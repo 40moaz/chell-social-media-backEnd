@@ -9,7 +9,6 @@ const {
   getMe
 } = require("../controllers/authController");
 const protect = require("../middleware/authMiddleware");
-// تسجيل مستخدم جديد
 router.post("/register", registerUser);
 
 router.post("/login", loginUser);

@@ -102,6 +102,7 @@ app.use("/api/notifications", require("../routes/notifications"));
 app.use("/api/stories", require("../routes/stories"));
 app.use("/api/search", require("../routes/search"));
 app.use("/api/likes", require("../routes/likes"));
+app.use("/api/bookmarks", require("../routes/bookmark"));
 
 app.get("/", (req, res) => {
   res.send("WebSocket & api server is running.>>>>>>>>>>>");
